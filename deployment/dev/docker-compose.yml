@@ -15,25 +15,34 @@ services:
       - POSTGRES_DB=test
   webapp:    
     build:      
-      context: ./webapp
-      dockerfile: Dockerfile
+      context: ../../webapp
+      dockerfile: Dockerfile.dev
     volumes:
       - data01:/box
-      - ./webapp:/var/www/app/webapp/
+      - ../../webapp:/var/www/app/webapp/
     links:
       - db
-    ports:
-      - "3000:3000"
     networks:
       - ruby-postgres
   box:
     image: busybox
     volumes:
       - data01:/box
+  nginx:
+    build:      
+      context: ../../nginx    
+      dockerfile: Dockerfile  
+    ports:      
+      - 80:80
+    networks:
+      - ruby-postgres
+    links:
+      - webapp
 volumes:  
   postgres_data: {} 
   data01:
     driver: local
+  
 networks:
   ruby-postgres:
     driver: bridge
